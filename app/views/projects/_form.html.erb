@@ -1,0 +1,30 @@
+<%= form_for @project, :html => { :class => 'form-horizontal' } do |f| %>
+  <div class="control-group">
+    <%= f.label :title, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :title, :class => 'text_field' %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :descrption, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_area :descrption, :class => 'text_field' %>
+    </div>
+  </div>
+  <% usr = @project.users.all %>
+  <div class="control-group">
+    <%= f.label :user_id, :class => 'control-label' %>
+    <div class="controls">
+    <% User.order(:id).all.each do |user| %>
+      <div>
+        <%= check_box_tag "project[user_ids][]", user.id, usr.include?(user) %>
+        <%= user.email %>
+      </div>
+    <% end %>
+    </div>
+  <div class="form-actions">
+    <%= f.submit nil, :class => 'btn btn-primary' %>
+    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                projects_path, :class => 'btn' %>
+  </div>
+<% end %>

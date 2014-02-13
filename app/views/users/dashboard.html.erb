@@ -1,0 +1,122 @@
+<% if current_user %>
+  <% if current_user.role == "admin"%>
+    <h3>Developer Todo Status</h3>
+      <table class="table table-striped">
+      <thead>
+        <th>Status</th>
+        <% @users.each do |user| %>
+          <th><%= user.name %></th>
+        <% end %>
+      </thead>
+      <% @user_status.each do |stat, todo| %>
+        <tr>
+          <td><%= stat %></td>
+          <% todo.values.each do|v| %><td><%= v.join("<br>").html_safe %></td><%end%>
+        </tr>
+      <% end %>
+    </table> 
+    <h3>Project Todo Status</h3>
+    <table class="table table-striped">
+      <thead>
+        <th>Status</th>
+        <% @projects.order(:id).each do |project| %>
+          <th><%= project.title %></th>
+        <% end %>
+      </thead>
+      <% @projects_status.each do |stat, todo| %>
+        <tr>
+          <td><%= stat %></td>
+          <% todo.values.each do|v| %><td><%= v.join("<br>").html_safe %></td><%end%>
+        </tr>
+      <% end %>
+    </table>
+  <% else %>
+  <% if current_user.todos.blank? %>
+    <h3>There is nothing todo</h3>
+    <% else %>
+      <table  class="table table-striped">
+        <thead>
+          <th style="text-align:left;">Project</th><th style="text-align:left;">Todo</th><th style="text-align:center;">Status</th><th style="text-align:right;">action</th>
+        </thead>
+        <% current_user.todos.each do |todo| %>
+          <tr>
+            <td style="text-align:left;"><%= todo.project.title %></td>
+            <td style="text-align:left;"><%= todo.title %></td>
+            <td style="text-align:center;"><%= todo.status %></td>
+            <td style="text-align:right;"><%= link_to t('.update status', :default => t("helpers.links.update status")),
+                          todo_status_user_path(todo), :class => 'btn btn-mini' %></td>
+            
+          </tr>
+        <% end %>
+      </table>
+    <% end%>
+  <% end %>
+<% else %>
+  <h3>Hi welcome to Projects Management System</h3>
+  <p>Please singin or signup</p>
+<% end %>
+<% if current_user %>
+  <% if current_user.role == "admin"%>
+    <script type="text/javascript">
+      
+      // Load the Visualization API and the piechart package.
+      google.load('visualization', '1.0', {'packages':['corechart']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.setOnLoadCallback(drawChart);
+
+      // Callback that creates and populates a data table,
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+      function drawChart() {
+        
+        for(i=1;i<= '<%= @count.length%>';i++){
+          var title= $("#p_"+i).html();
+          
+          var new_count = $("#s_"+i+"_"+1).html();
+          var inprogress_count = $("#s_"+i+"_"+2).html(); 
+          var done_count = $("#s_"+i+"_"+3).html();
+           
+          // Create the data table.
+          var data = new google.visualization.DataTable();
+          data.addColumn('string', 'Topping');
+          data.addColumn('number', 'Slices');
+          data.addRows([
+            ['new', Number(new_count)],
+            ['inprogress', Number(inprogress_count)],
+            ['done', Number(done_count)]
+
+     
+          ]);
+
+          // Set chart options
+          var options = {'title':title,
+                         'width':400,
+                         'height':300};
+
+          // Instantiate and draw our chart, passing in some options.
+          
+              
+          var chart = new google.visualization.PieChart(document.getElementById('chart_div_'+i));
+          chart.draw(data, options);
+       }
+      }      
+    </script>
+
+    <!--Div that will hold the pie chart-->
+    <% for i in 1..@count.length %>
+      <div id="chart_div_<%= i %>"></div>
+    <% end %>
+    <div id="chart_div_1"></div>
+    <% i = 0 %>
+    <table border=2 style="display:none">  
+      <% @count.each do |stat, todo| %>
+        <% i += 1 %><% j = 0 %>    
+        <tr>
+          <td ><span id="p_<%= i%>" ><%= stat %></span></td>
+          <% todo.values.each do |v| %><td><% j += 1 %><span id="s_<%= i%>_<%= j%>" ><%= v %></span></td><% end %>
+        </tr>
+      <% end %>
+    </table>
+  <% end -%>
+<% end -%>

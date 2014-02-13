@@ -1,0 +1,27 @@
+<%- model_class = Todo -%>
+  <div class="page-header">
+    <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+  </div>
+
+  <dl class="dl-horizontal">
+    <dt><strong>Project title:</strong></dt>
+    <dd><%= @todo.project.title %></dd>
+    <dt><strong>Todo:</strong></dt>
+    <dd><%= @todo.title %></dd>
+    <dt><strong><%= model_class.human_attribute_name(:descrption) %>:</strong></dt>
+    <dd><%= @todo.descrption %></dd>
+    <dt><strong>Developer:</strong></dt>
+    <dd><%= @todo.user.email %></dd>
+    <%= form_for @todo, :url => { :controller =>"users" ,:action => "update_status" }, :html => { :class => 'form-horizontal' } do |f| %>
+      <dt><strong><%= model_class.human_attribute_name(:status) %>:</strong></dt>
+      <dd><%= f.select :status, ["in progress", "done"]%></dd>
+
+
+      <div class="form-actions">
+        <%= f.submit nil, :class => 'btn btn-primary' %>
+        <%= link_to t('.back', :default => t("helpers.links.back")),
+                    root_path, :class => 'btn'  %>   
+      </div>
+    <% end %>
+  </dl>
+</div>
